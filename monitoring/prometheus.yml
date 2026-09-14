@@ -5,7 +5,6 @@ global:
 scrape_configs:
   - job_name: "johnrahmadi-model-serving"
     metrics_path: /monitoring/prometheus/metrics
+    scheme: https
     static_configs:
-      # Ganti <URL_DEPLOYMENT> dengan domain hasil deploy di Railway/Heroku
-      # contoh: johnrahmadi-churn.up.railway.app
-      - targets: ["<URL_DEPLOYMENT>:<PORT>"]
+      - targets: ["submission-mlops-johnrahmadi-production.up.railway.app"]
