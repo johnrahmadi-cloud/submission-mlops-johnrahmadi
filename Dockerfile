@@ -1,7 +1,7 @@
 FROM tensorflow/serving:latest
 
 # Salin model hasil Pusher ke image
-COPY ./serving_model /models/johnrahmadi-pipeline
+COPY ./serving_model/johnrahmadi-pipeline /models/johnrahmadi-pipeline
 
 # Variabel environment untuk TF Serving
 ENV MODEL_NAME=johnrahmadi-pipeline
