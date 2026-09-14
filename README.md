@@ -1,0 +1,18 @@
+# Submission 2: Sistem Machine Learning untuk Prediksi Customer Churn
+
+Nama: John Rahmadi
+
+Username dicoding: johnrahmadi
+
+|                         | Deskripsi                                                                                                                                                                                                                                        |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dataset                 | [Telco Customer Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) — data pelanggan sebuah perusahaan telekomunikasi (±7043 baris, 21 kolom), berisi informasi demografis, layanan yang digunakan, dan status berhenti berlangganan (churn). |
+| Masalah                 | Perusahaan telekomunikasi ingin mengetahui pelanggan mana yang berpotensi berhenti berlangganan (churn) agar tim retensi dapat melakukan intervensi (mis. penawaran khusus) sebelum pelanggan benar-benar pergi.                              |
+| Solusi machine learning | Membangun model klasifikasi biner yang memprediksi probabilitas seorang pelanggan akan churn berdasarkan atribut demografis, jenis layanan yang digunakan, jenis kontrak, dan riwayat tagihan. Target: model dapat membedakan pelanggan yang churn vs tidak dengan performa yang layak (AUC & recall memadai) sehingga bisa dipakai sebagai sinyal awal bagi tim retensi. |
+| Metode pengolahan       | Data numerik (`tenure`, `MonthlyCharges`, `TotalCharges`) dinormalisasi dengan z-score. Fitur kategorikal (`gender`, `Contract`, `InternetService`, dll.) diubah menjadi index vocabulary lalu di-encode one-hot. Kolom `customerID` dibuang karena tidak informatif, label `Churn` dikonversi menjadi angka biner (1/0) sejak tahap pembersihan data, dan nilai kosong pada `TotalCharges` dibersihkan sebelum data masuk pipeline. Seluruh preprocessing dilakukan lewat komponen `Transform` TFX (lihat `modules/transform_module.py`). |
+| Arsitektur model        | Model Keras dengan Functional API: seluruh fitur numerik & kategorikal (setelah di-transform) digabungkan (`concatenate`), dilanjutkan tiga hidden layer Dense (256 → 128 → 64 unit, aktivasi ReLU) dengan Dropout 0.3 di antaranya, dan output layer Dense(1, sigmoid) untuk klasifikasi biner. |
+| Metrik evaluasi         | Binary Accuracy, AUC, Precision, dan Recall — dihitung lewat komponen `Evaluator` (TFMA), dengan threshold minimum Binary Accuracy 0.6 agar model baru harus lebih baik atau setara dengan model sebelumnya sebelum di-push. |
+| Performa model          | Model berhasil dilatih dan lolos threshold evaluasi (blessed), dengan hasil pada data evaluasi sebagai berikut: **AUC 0.786**, **Binary Accuracy 0.765**, **Precision 0.556**, **Recall 0.479**. Model kemudian berhasil di-push ke `serving_model/johnrahmadi-pipeline/`. |
+| Opsi deployment         | Model di-serve menggunakan **TensorFlow Serving** yang dibungkus dalam image Docker, lalu di-deploy ke platform cloud **Railway** (alternatif dari Heroku) agar dapat diakses lewat REST API publik. |
+| Web app                 | *(Isi dengan tautan endpoint model setelah deploy. Contoh: [johnrahmadi-pipeline](https://johnrahmadi-churn-production.up.railway.app/v1/models/johnrahmadi-pipeline/metadata))* |
+| Monitoring              | *(Isi setelah menjalankan Prometheus — contoh: Prometheus berhasil melakukan scraping terhadap endpoint `/monitoring/prometheus/metrics` dari TF Serving setiap 10 detik, memantau metrik seperti jumlah request, latency, dan status request (sukses/gagal) ke model serving.)* |
